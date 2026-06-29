@@ -1,0 +1,1331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Snapmatic Studio</title>
+<style>
+:root{
+  --ink:#f8fbff;
+  --muted:rgba(248,251,255,.72);
+  --soft:rgba(248,251,255,.54);
+  --stroke:rgba(255,255,255,.34);
+  --shadow:rgba(1,6,18,.48);
+  --cyan:#66e7ff;
+  --rose:#ff4f97;
+  --ok:#84ffa9;
+  --warn:#ffe08a;
+  --bad:#ff6577;
+}
+*{box-sizing:border-box}
+html{min-height:100%}
+body{
+  min-height:100vh;
+  margin:0;
+  color:var(--ink);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 15% 12%,rgba(102,231,255,.32),transparent 32rem),
+    radial-gradient(circle at 85% 4%,rgba(255,79,151,.32),transparent 28rem),
+    radial-gradient(circle at 50% 95%,rgba(182,255,109,.20),transparent 30rem),
+    #090c13;
+  overflow-x:hidden;
+}
+body:before,
+body:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+body:before{
+  background-image:linear-gradient(120deg,rgba(9,12,19,.38),rgba(9,12,19,.58)),url("assets/background.jpg");
+  background-size:cover;
+  background-position:center;
+  filter:saturate(1.16) contrast(1.04);
+  z-index:-3;
+}
+body:after{
+  background:
+    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 74%,transparent);
+  z-index:-1;
+}
+.aura{
+  position:fixed;
+  inset:auto auto -18rem -8rem;
+  width:min(52vw,44rem);
+  aspect-ratio:1;
+  border-radius:999px;
+  background:conic-gradient(from 120deg,rgba(102,231,255,.28),rgba(255,79,151,.22),rgba(255,209,102,.20),rgba(102,231,255,.28));
+  filter:blur(42px);
+  opacity:.9;
+  pointer-events:none;
+  z-index:-2;
+  animation:floatAura 16s ease-in-out infinite alternate;
+}
+@keyframes floatAura{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(16vw,-10vh,0) scale(1.18)}
+}
+.wrap{
+  width:min(1180px,calc(100% - 32px));
+  margin:0 auto;
+  padding:28px 0 36px;
+}
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:18px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.logo{
+  width:48px;
+  height:48px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.46);
+  flex:0 0 auto;
+  background:
+    radial-gradient(circle at 32% 25%,rgba(255,255,255,.95),rgba(255,255,255,.18) 18%,transparent 32%),
+    linear-gradient(135deg,rgba(102,231,255,.72),rgba(255,79,151,.58),rgba(255,209,102,.62));
+  box-shadow:inset 0 1px 8px rgba(255,255,255,.5),0 14px 38px rgba(0,0,0,.25);
+}
+h1{
+  margin:0;
+  font-size:3.45rem;
+  line-height:.94;
+  letter-spacing:0;
+}
+.tagline{
+  margin:6px 0 0;
+  color:var(--muted);
+  line-height:1.45;
+}
+.shell{
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(350px,.95fr);
+  gap:18px;
+  align-items:start;
+}
+.glass{
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--stroke);
+  border-radius:28px;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10)),
+    linear-gradient(180deg,rgba(7,11,20,.38),rgba(7,11,20,.28));
+  box-shadow:0 24px 70px var(--shadow);
+  backdrop-filter:blur(24px) saturate(1.2);
+}
+.glass:before{
+  content:"";
+  position:absolute;
+  inset:1px;
+  border-radius:inherit;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 16% 0%,rgba(255,255,255,.42),transparent 24rem),
+    radial-gradient(circle at 92% 8%,rgba(102,231,255,.18),transparent 18rem);
+}
+.panel{padding:30px}
+.panel>*{position:relative;z-index:1}
+.toolbar{
+  position:relative;
+  z-index:6;
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:flex-end;
+  margin-bottom:16px;
+  flex-wrap:wrap;
+}
+.toolbar-tools{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.label{
+  display:block;
+  margin:0 0 8px;
+  color:var(--soft);
+  font-size:.78rem;
+  font-weight:750;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+button{
+  min-height:44px;
+  border:1px solid rgba(255,255,255,.27);
+  border-radius:999px;
+  color:var(--ink);
+  background:rgba(255,255,255,.13);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 10px 24px rgba(0,0,0,.18);
+  font:inherit;
+  font-weight:750;
+  cursor:pointer;
+  transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+button:hover{
+  transform:translateY(-2px);
+  background:rgba(255,255,255,.2);
+  border-color:rgba(255,255,255,.44);
+}
+button:disabled{
+  cursor:not-allowed;
+  opacity:.48;
+  transform:none;
+}
+.danger{
+  padding:0 16px;
+  background:rgba(255,101,119,.15);
+  border-color:rgba(255,101,119,.38);
+}
+.primary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:0 18px;
+  color:#071018;
+  background:linear-gradient(135deg,var(--cyan),#eaff82 52%,var(--rose));
+  border-color:rgba(255,255,255,.66);
+}
+.secondary{
+  padding:0 18px;
+  background:rgba(255,255,255,.13);
+}
+.mode-picker{
+  position:relative;
+  z-index:9;
+  width:min(100%,250px);
+}
+.mode-button{
+  width:100%;
+  min-width:230px;
+  padding:0 48px 0 18px;
+  text-align:left;
+  background:rgba(1,7,18,.28);
+  color:var(--ink);
+  border-color:rgba(255,255,255,.32);
+}
+.mode-button:after{
+  content:"";
+  position:absolute;
+  right:18px;
+  top:50%;
+  width:10px;
+  height:10px;
+  border-right:2px solid currentColor;
+  border-bottom:2px solid currentColor;
+  transform:translateY(-65%) rotate(45deg);
+  transition:transform .18s ease;
+}
+.mode-picker.open .mode-button:after{
+  transform:translateY(-35%) rotate(225deg);
+}
+.mode-menu{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% + 8px);
+  z-index:8;
+  display:grid;
+  gap:6px;
+  max-height:0;
+  padding:0 8px;
+  opacity:0;
+  overflow:hidden;
+  pointer-events:none;
+  border:1px solid rgba(255,255,255,.30);
+  border-radius:22px;
+  background:rgba(10,15,28,.82);
+  box-shadow:0 22px 60px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.24);
+  backdrop-filter:blur(22px) saturate(1.25);
+  transform:translateY(-8px);
+  transition:max-height .24s ease,padding .24s ease,opacity .18s ease,transform .18s ease;
+}
+.mode-picker.open .mode-menu{
+  max-height:170px;
+  padding:8px;
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+.mode-option{
+  width:100%;
+  justify-content:flex-start;
+  min-height:42px;
+  padding:0 14px;
+  border-radius:16px;
+  box-shadow:none;
+  background:rgba(255,255,255,.08);
+}
+.mode-option[aria-selected="true"]{
+  color:#071018;
+  background:linear-gradient(135deg,var(--cyan),#eaff82 52%,var(--rose));
+  border-color:rgba(255,255,255,.62);
+}
+.resize-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  min-height:44px;
+  padding:0 14px;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:999px;
+  background:rgba(1,7,18,.22);
+  color:var(--muted);
+  font-weight:750;
+  cursor:pointer;
+}
+.resize-toggle input{
+  width:18px;
+  height:18px;
+  accent-color:var(--cyan);
+}
+[hidden]{display:none!important}
+.hint{
+  margin:0;
+  color:var(--muted);
+  line-height:1.5;
+}
+.status{
+  margin:12px 0 0;
+  min-height:20px;
+  color:var(--muted);
+  line-height:1.45;
+}
+.ok{color:var(--ok)}
+.warn{color:var(--warn)}
+.bad{color:var(--bad)}
+.template-panel{
+  margin:0 0 16px;
+  padding:14px;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:24px;
+  background:rgba(1,7,18,.22);
+}
+.template-body{
+  display:grid;
+  gap:12px;
+}
+.template-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.template-actions .status{
+  margin:0;
+}
+.drop{
+  min-height:320px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  padding:24px;
+  border:1px dashed rgba(255,255,255,.46);
+  border-radius:30px;
+  background:linear-gradient(rgba(5,8,18,.42),rgba(5,8,18,.42)),url("assets/drop.jpg");
+  background-size:cover;
+  background-position:center;
+  box-shadow:inset 0 1px 22px rgba(255,255,255,.16);
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.drop.drag{
+  transform:scale(1.01);
+  border-color:rgba(132,255,169,.9);
+  box-shadow:inset 0 1px 26px rgba(255,255,255,.22),0 0 42px rgba(102,231,255,.28);
+}
+.drop-bubble{
+  width:min(100%,460px);
+  padding:24px;
+  border:1px solid rgba(255,255,255,.38);
+  border-radius:34px;
+  background:rgba(255,255,255,.16);
+  backdrop-filter:blur(18px) saturate(1.25);
+  box-shadow:0 18px 50px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.35);
+}
+.drop-title{
+  margin:0 0 8px;
+  font-size:2.2rem;
+  line-height:1;
+  font-weight:850;
+  letter-spacing:0;
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  margin-top:18px;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:16px;
+}
+.stat{
+  min-height:78px;
+  padding:14px;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:22px;
+  background:rgba(1,7,18,.22);
+}
+.stat strong{
+  display:block;
+  font-size:1.45rem;
+  line-height:1;
+}
+.stat span{
+  display:block;
+  margin-top:8px;
+  color:var(--soft);
+  font-size:.82rem;
+}
+.side{
+  display:grid;
+  gap:18px;
+}
+.portrait-card{
+  min-height:250px;
+  background:linear-gradient(180deg,transparent 38%,rgba(5,8,18,.82)),url("assets/portrait.jpg");
+  background-size:cover;
+  background-position:center;
+}
+.portrait-card .caption{
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:18px;
+  z-index:1;
+  padding:14px;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:22px;
+  background:rgba(255,255,255,.14);
+  backdrop-filter:blur(18px);
+}
+.caption p,
+.caption h2{margin:0}
+.caption h2{font-size:1rem}
+.caption p{
+  margin-top:5px;
+  color:var(--muted);
+  line-height:1.35;
+}
+.results-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.results-head h2{
+  margin:0;
+  font-size:1.12rem;
+}
+.preview-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:12px;
+  max-height:560px;
+  overflow:auto;
+  padding-right:2px;
+}
+.preview-card{
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:22px;
+  background:rgba(1,7,18,.2);
+  overflow:hidden;
+}
+.preview-card button.thumb{
+  display:block;
+  width:100%;
+  height:128px;
+  min-height:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:#111;
+  box-shadow:none;
+}
+.preview-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.preview-meta{
+  padding:10px;
+}
+.preview-name{
+  font-size:.82rem;
+  font-weight:750;
+  overflow-wrap:anywhere;
+}
+.preview-format{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  margin-top:8px;
+  padding:0 9px;
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:999px;
+  color:var(--soft);
+  background:rgba(255,255,255,.08);
+  font-size:.72rem;
+  font-weight:800;
+}
+.preview-actions{
+  display:flex;
+  gap:8px;
+  margin-top:9px;
+}
+.preview-actions a,
+.preview-actions button{
+  min-height:34px;
+  padding:0 11px;
+  border-radius:999px;
+  font-size:.8rem;
+}
+.preview-actions a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#071018;
+  background:linear-gradient(135deg,var(--cyan),#eaff82 52%,var(--rose));
+  font-weight:800;
+  text-decoration:none;
+}
+.empty{
+  padding:28px 18px;
+  color:var(--muted);
+  text-align:center;
+  line-height:1.45;
+}
+.tips{
+  margin-top:14px;
+  color:var(--muted);
+  line-height:1.55;
+}
+.tips strong{color:var(--ink)}
+.tips ul{
+  margin:9px 0 0 18px;
+  padding:0;
+}
+.tips li+li{margin-top:6px}
+.toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:9;
+  display:none;
+  align-items:center;
+  gap:12px;
+  max-width:min(420px,calc(100vw - 36px));
+  padding:14px 16px;
+  border:1px solid rgba(255,255,255,.34);
+  border-radius:22px;
+  color:var(--ink);
+  background:rgba(12,17,30,.68);
+  box-shadow:0 22px 60px rgba(0,0,0,.42);
+  backdrop-filter:blur(18px) saturate(1.25);
+}
+.toast.show{display:flex}
+.toast button{
+  min-height:34px;
+  padding:0 12px;
+}
+.viewer{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(3,6,14,.82);
+  backdrop-filter:blur(18px);
+}
+.viewer.show{display:flex}
+.viewer img{
+  max-width:100%;
+  max-height:100%;
+  border-radius:18px;
+  box-shadow:0 24px 80px rgba(0,0,0,.65);
+}
+.viewer button{
+  position:fixed;
+  top:18px;
+  right:18px;
+  padding:0 16px;
+}
+input[type=file]{display:none}
+@media(max-width:920px){
+  .shell{grid-template-columns:1fr}
+  .portrait-card{min-height:240px}
+}
+@media(max-width:620px){
+  .wrap{
+    width:min(100% - 20px,1180px);
+    padding-top:16px;
+  }
+  .logo{
+    width:42px;
+    height:42px;
+  }
+  h1{font-size:2.15rem}
+  .toolbar{
+    align-items:flex-start;
+  }
+  .toolbar-tools{
+    justify-content:flex-start;
+  }
+  .mode-picker,
+  .mode-button{
+    width:100%;
+    min-width:0;
+  }
+  .stats{grid-template-columns:1fr}
+  .drop{
+    padding:12px;
+    min-height:280px;
+    border-radius:24px;
+  }
+  .drop-bubble{
+    padding:18px;
+    border-radius:26px;
+  }
+  .drop-title{font-size:1.75rem}
+  .glass{border-radius:24px}
+  .panel{padding:16px}
+  .preview-grid{grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *,
+  *:before,
+  *:after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="aura"></div>
+<main class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Snapmatic Studio</h1>
+        <p class="tagline">Extract JPGs from PGTA Snapmatic files or wrap JPGs back into PGTA files in a private, local glass-bubble workspace.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell">
+    <section class="glass panel" aria-labelledby="converterTitle">
+      <h2 id="converterTitle" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Snapmatic converter</h2>
+
+      <div class="toolbar">
+        <div>
+          <span class="label">Conversion</span>
+          <div class="mode-picker" id="modePicker">
+            <button class="mode-button" id="modeButton" type="button" aria-haspopup="listbox" aria-expanded="false">
+              <span id="modeButtonText">PGTA to JPG</span>
+            </button>
+            <div class="mode-menu" id="modeMenu" role="listbox" aria-hidden="true">
+              <button class="mode-option" type="button" role="option" data-mode="snap2jpg" aria-selected="true">PGTA to JPG</button>
+              <button class="mode-option" type="button" role="option" data-mode="jpg2snap" aria-selected="false">JPG to PGTA</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-tools">
+          <label class="resize-toggle" id="resizeToggle" hidden>
+            <input type="checkbox" id="resize" checked />
+            <span>Force 960x536</span>
+          </label>
+          <button class="danger" id="clear" type="button">Clear</button>
+        </div>
+      </div>
+
+      <div class="template-panel" id="templateBox" hidden>
+        <span class="label">Template</span>
+        <div class="template-body">
+          <p class="hint">Choose one real PGTA Snapmatic file. Its header is copied and your JPG is placed inside it.</p>
+          <div class="template-actions">
+            <button class="primary" id="pickTemplate" type="button">Choose PGTA template</button>
+            <span class="status" id="templateStatus">No template loaded.</span>
+          </div>
+          <input id="templateInput" type="file" />
+        </div>
+      </div>
+
+      <div class="drop" id="drop">
+        <div class="drop-bubble">
+          <p class="drop-title" id="dropTitle">Drop PGTA files here</p>
+          <p class="hint" id="dropHint">Your converted JPG previews will appear on the right.</p>
+          <div class="actions">
+            <button class="primary" id="pickFiles" type="button">Choose PGTA files</button>
+            <button class="secondary" id="downloadAll" type="button" disabled>Download zip</button>
+          </div>
+          <input id="fileInput" type="file" multiple />
+        </div>
+      </div>
+
+      <div class="stats" aria-label="Conversion totals">
+        <div class="stat"><strong id="totalCount">0</strong><span>Files handled</span></div>
+        <div class="stat"><strong id="okCount">0</strong><span id="readyLabel">Ready images</span></div>
+        <div class="stat"><strong id="failCount">0</strong><span>Needs attention</span></div>
+      </div>
+      <div class="status" id="status"></div>
+    </section>
+
+    <aside class="side">
+      <section class="glass portrait-card" aria-label="Preview image">
+        <div class="caption">
+          <h2 id="captionTitle">Preview, view, download</h2>
+          <p id="captionText">Open each converted JPG full-size, or download everything as one zip.</p>
+        </div>
+      </section>
+
+      <section class="glass panel" aria-labelledby="resultsTitle">
+        <div class="results-head">
+          <h2 id="resultsTitle">Converted images</h2>
+          <span class="status" id="queueStatus">No files yet.</span>
+        </div>
+        <div class="preview-grid" id="previewGrid" hidden></div>
+        <div class="empty" id="emptyState">Converted JPG previews will appear here.</div>
+        <div class="tips">
+          <strong>Tip:</strong>
+          <ul id="tipsList"></ul>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<div class="toast" id="toast">
+  <span id="toastText">Download started.</span>
+  <button type="button" id="toastClose">Close</button>
+</div>
+<div class="viewer" id="viewer" aria-modal="true" role="dialog">
+  <button type="button" id="viewerClose">Close</button>
+  <img id="viewerImage" alt="Full size converted preview">
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const modePicker = $("modePicker");
+  const modeButton = $("modeButton");
+  const modeButtonText = $("modeButtonText");
+  const modeMenu = $("modeMenu");
+  const modeOptions = Array.from(document.querySelectorAll(".mode-option"));
+  const resizeToggle = $("resizeToggle");
+  const resizeEl = $("resize");
+  const templateBox = $("templateBox");
+  const templateInput = $("templateInput");
+  const pickTemplateBtn = $("pickTemplate");
+  const templateStatus = $("templateStatus");
+  const dropEl = $("drop");
+  const dropTitle = $("dropTitle");
+  const dropHint = $("dropHint");
+  const fileInput = $("fileInput");
+  const pickFilesBtn = $("pickFiles");
+  const clearBtn = $("clear");
+  const statusEl = $("status");
+  const downloadAllBtn = $("downloadAll");
+  const totalCount = $("totalCount");
+  const okCount = $("okCount");
+  const failCount = $("failCount");
+  const readyLabel = $("readyLabel");
+  const resultsTitle = $("resultsTitle");
+  const queueStatus = $("queueStatus");
+  const previewGrid = $("previewGrid");
+  const emptyState = $("emptyState");
+  const tipsList = $("tipsList");
+  const captionTitle = $("captionTitle");
+  const captionText = $("captionText");
+  const toast = $("toast");
+  const toastText = $("toastText");
+  const viewer = $("viewer");
+  const viewerImage = $("viewerImage");
+
+  const modes = {
+    snap2jpg: {
+      label: "PGTA to JPG",
+      dropTitle: "Drop PGTA files here",
+      dropHint: "Your converted JPG previews will appear on the right.",
+      pickLabel: "Choose PGTA files",
+      resultsTitle: "Converted images",
+      empty: "Converted JPG previews will appear here.",
+      readyLabel: "Ready images",
+      captionTitle: "Preview, view, download",
+      captionText: "Open each converted JPG full-size, or download everything as one zip.",
+      zipName: "converted-snapmatic-jpgs.zip",
+      itemLabel: "image",
+      tips: [
+        "Use Download zip to save every converted JPG in one folder.",
+        "Click a preview to view the image full-size in the browser."
+      ]
+    },
+    jpg2snap: {
+      label: "JPG to PGTA",
+      dropTitle: "Drop JPG files here",
+      dropHint: "Load a PGTA template first, then convert JPGs into Snapmatic files.",
+      pickLabel: "Choose JPG files",
+      resultsTitle: "Generated PGTA files",
+      empty: "Generated PGTA files will appear here with JPG previews.",
+      readyLabel: "Ready files",
+      captionTitle: "Preview, package, download",
+      captionText: "Each JPG preview is wrapped into a PGTA file with no extension.",
+      zipName: "converted-snapmatic-pgtas.zip",
+      itemLabel: "file",
+      tips: [
+        "Generated files have no extension and start with PGTA.",
+        "Put them in Documents\\Rockstar Games\\GTA V\\Profiles\\<profileid>\\."
+      ]
+    }
+  };
+
+  let currentMode = "snap2jpg";
+  let templateHeader = null;
+  let downloadQueue = [];
+  let totals = { handled: 0, ok: 0, fail: 0 };
+
+  function setStatus(message, tone = "") {
+    statusEl.className = "status " + tone;
+    statusEl.textContent = message;
+  }
+
+  function showToast(message) {
+    toastText.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => toast.classList.remove("show"), 4200);
+  }
+
+  function setTips(items) {
+    tipsList.replaceChildren(...items.map((text) => {
+      const li = document.createElement("li");
+      li.textContent = text;
+      return li;
+    }));
+  }
+
+  function updateTotals() {
+    const mode = modes[currentMode];
+    const count = downloadQueue.length;
+    totalCount.textContent = totals.handled;
+    okCount.textContent = totals.ok;
+    failCount.textContent = totals.fail;
+    downloadAllBtn.disabled = count === 0;
+    queueStatus.textContent = count
+      ? count + " " + mode.itemLabel + (count === 1 ? "" : "s") + " ready."
+      : "No files yet.";
+    previewGrid.hidden = count === 0;
+    emptyState.hidden = count !== 0;
+  }
+
+  function updateModeUI() {
+    const mode = modes[currentMode];
+    modeButtonText.textContent = mode.label;
+    modeOptions.forEach((option) => {
+      option.setAttribute("aria-selected", option.dataset.mode === currentMode ? "true" : "false");
+    });
+    templateBox.hidden = currentMode !== "jpg2snap";
+    resizeToggle.hidden = currentMode !== "jpg2snap";
+    dropTitle.textContent = mode.dropTitle;
+    dropHint.textContent = mode.dropHint;
+    pickFilesBtn.textContent = mode.pickLabel;
+    resultsTitle.textContent = mode.resultsTitle;
+    emptyState.textContent = mode.empty;
+    readyLabel.textContent = mode.readyLabel;
+    captionTitle.textContent = mode.captionTitle;
+    captionText.textContent = mode.captionText;
+    setTips(mode.tips);
+    if (currentMode === "jpg2snap") {
+      fileInput.accept = "image/jpeg,.jpg,.jpeg";
+    } else {
+      fileInput.removeAttribute("accept");
+    }
+    updateTotals();
+  }
+
+  function openModeMenu() {
+    modePicker.classList.add("open");
+    modeButton.setAttribute("aria-expanded", "true");
+    modeMenu.setAttribute("aria-hidden", "false");
+  }
+
+  function closeModeMenu(returnFocus = false) {
+    modePicker.classList.remove("open");
+    modeButton.setAttribute("aria-expanded", "false");
+    modeMenu.setAttribute("aria-hidden", "true");
+    if (returnFocus) modeButton.focus();
+  }
+
+  function setMode(mode) {
+    if (!modes[mode]) return;
+    closeModeMenu();
+    if (mode === currentMode) return;
+    currentMode = mode;
+    clearResults();
+    setStatus("");
+    updateModeUI();
+  }
+
+  function resetTemplate() {
+    templateHeader = null;
+    templateStatus.textContent = "No template loaded.";
+    templateInput.value = "";
+  }
+
+  function revokeItemUrls(item) {
+    URL.revokeObjectURL(item.blobUrl);
+    if (item.previewUrl && item.previewUrl !== item.blobUrl) {
+      URL.revokeObjectURL(item.previewUrl);
+    }
+  }
+
+  function clearResults() {
+    for (const item of downloadQueue) revokeItemUrls(item);
+    downloadQueue = [];
+    totals = { handled: 0, ok: 0, fail: 0 };
+    previewGrid.innerHTML = "";
+    fileInput.value = "";
+    setStatus("");
+    updateTotals();
+  }
+
+  function clearAll() {
+    clearResults();
+    resetTemplate();
+  }
+
+  function bytesIndexOf(haystack, needle) {
+    outer: for (let i = 0; i <= haystack.length - needle.length; i++) {
+      for (let j = 0; j < needle.length; j++) {
+        if (haystack[i + j] !== needle[j]) continue outer;
+      }
+      return i;
+    }
+    return -1;
+  }
+
+  function isPgtaFile(file) {
+    const name = (file && file.name ? file.name : "").toLowerCase();
+    return name.startsWith("pgta") || name.endsWith(".pgta");
+  }
+
+  function isJpgFile(file) {
+    const name = (file && file.name ? file.name : "").toLowerCase();
+    return file.type === "image/jpeg" || name.endsWith(".jpg") || name.endsWith(".jpeg");
+  }
+
+  function requirePgtaFile(file, label) {
+    if (!isPgtaFile(file)) {
+      throw new Error(label + " must be a PGTA file.");
+    }
+  }
+
+  async function loadTemplate(file) {
+    requirePgtaFile(file, "Template");
+    const buf = new Uint8Array(await file.arrayBuffer());
+    const soi = bytesIndexOf(buf, new Uint8Array([0xFF, 0xD8]));
+    if (soi <= 0) {
+      throw new Error("Template must be a real PGTA file with a Snapmatic header.");
+    }
+    templateHeader = buf.slice(0, soi);
+    const ok = document.createElement("span");
+    ok.className = "ok";
+    ok.textContent = "Template loaded:";
+    templateStatus.replaceChildren(ok, " " + file.name + " (header " + templateHeader.length + " bytes)");
+  }
+
+  function randomPGTANumber(used) {
+    while (true) {
+      const n = Math.floor(Math.random() * 1_000_000_000);
+      const s = String(n).padStart(9, "0");
+      const name = "PGTA" + s;
+      if (!used.has(name)) {
+        used.add(name);
+        return name;
+      }
+    }
+  }
+
+  async function snapmaticToJpg(file) {
+    requirePgtaFile(file, "Input");
+    const buf = new Uint8Array(await file.arrayBuffer());
+    const soi = bytesIndexOf(buf, new Uint8Array([0xFF, 0xD8]));
+    if (soi <= 0) {
+      throw new Error("No Snapmatic JPG data found.");
+    }
+    const jpg = buf.slice(soi);
+    const blob = new Blob([jpg], { type: "image/jpeg" });
+    return { outName: file.name + ".jpg", blob, previewBlob: blob, format: "JPG" };
+  }
+
+  async function imageToCanvasBlob(file, targetW = 960, targetH = 536, quality = 0.92) {
+    const imgUrl = URL.createObjectURL(file);
+    try {
+      const img = await new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error("Failed to decode image: " + file.name));
+        image.src = imgUrl;
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext("2d", { alpha: false });
+      const scale = Math.max(targetW / img.width, targetH / img.height);
+      const drawW = img.width * scale;
+      const drawH = img.height * scale;
+      const dx = (targetW - drawW) / 2;
+      const dy = (targetH - drawH) / 2;
+      ctx.drawImage(img, dx, dy, drawW, drawH);
+
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+      if (!blob) throw new Error("Canvas encoding failed.");
+      return blob;
+    } finally {
+      URL.revokeObjectURL(imgUrl);
+    }
+  }
+
+  async function jpgToSnapmatic(file, usedNames) {
+    if (!templateHeader) {
+      throw new Error("No PGTA template loaded.");
+    }
+    if (!isJpgFile(file)) {
+      throw new Error("Input must be a JPG file.");
+    }
+
+    const jpegBlob = resizeEl.checked ? await imageToCanvasBlob(file, 960, 536, 0.92) : file;
+    const jpegBytes = new Uint8Array(await jpegBlob.arrayBuffer());
+    if (!(jpegBytes[0] === 0xFF && jpegBytes[1] === 0xD8)) {
+      throw new Error("Output JPG data is invalid.");
+    }
+
+    const outName = randomPGTANumber(usedNames);
+    const blob = new Blob([templateHeader, jpegBytes], { type: "application/octet-stream" });
+    return { outName, blob, previewBlob: jpegBlob, format: "PGTA" };
+  }
+
+  function enqueueDownload(outName, blob, previewBlob) {
+    const blobUrl = URL.createObjectURL(blob);
+    const previewUrl = previewBlob === blob ? blobUrl : URL.createObjectURL(previewBlob);
+    downloadQueue.push({ name: outName, blob, blobUrl, previewUrl });
+    updateTotals();
+    return { blobUrl, previewUrl };
+  }
+
+  function addPreview(outName, downloadUrl, previewUrl, format) {
+    const card = document.createElement("article");
+    card.className = "preview-card";
+
+    const openBtn = document.createElement("button");
+    openBtn.type = "button";
+    openBtn.className = "thumb";
+    openBtn.title = "View preview";
+
+    const img = document.createElement("img");
+    img.src = previewUrl;
+    img.alt = outName;
+    openBtn.appendChild(img);
+    openBtn.addEventListener("click", () => openViewer(previewUrl));
+
+    const meta = document.createElement("div");
+    meta.className = "preview-meta";
+
+    const name = document.createElement("div");
+    name.className = "preview-name";
+    name.textContent = outName;
+
+    const formatBadge = document.createElement("span");
+    formatBadge.className = "preview-format";
+    formatBadge.textContent = format;
+
+    const actions = document.createElement("div");
+    actions.className = "preview-actions";
+
+    const download = document.createElement("a");
+    download.href = downloadUrl;
+    download.download = outName;
+    download.textContent = "Download";
+
+    const view = document.createElement("button");
+    view.type = "button";
+    view.textContent = "View";
+    view.addEventListener("click", () => openViewer(previewUrl));
+
+    actions.append(download, view);
+    meta.append(name, formatBadge, actions);
+    card.append(openBtn, meta);
+    previewGrid.prepend(card);
+  }
+
+  async function handleFiles(files) {
+    const list = Array.from(files || []);
+    if (!list.length) return;
+
+    const usedNames = new Set(downloadQueue.map((x) => x.name));
+    const mode = currentMode;
+    setStatus("Processing " + list.length + " file" + (list.length === 1 ? "" : "s") + "...");
+    let ok = 0;
+    let fail = 0;
+
+    for (const file of list) {
+      totals.handled++;
+      try {
+        const result = mode === "snap2jpg"
+          ? await snapmaticToJpg(file)
+          : await jpgToSnapmatic(file, usedNames);
+        const urls = enqueueDownload(result.outName, result.blob, result.previewBlob);
+        addPreview(result.outName, urls.blobUrl, urls.previewUrl, result.format);
+        ok++;
+        totals.ok++;
+      } catch (error) {
+        fail++;
+        totals.fail++;
+        console.warn(file.name, error);
+      }
+    }
+
+    updateTotals();
+    setStatus(
+      fail === 0
+        ? "Done. Converted " + ok + " file" + (ok === 1 ? "" : "s") + "."
+        : "Done. Ready: " + ok + " / Needs attention: " + fail + ".",
+      fail === 0 ? "ok" : "warn"
+    );
+    fileInput.value = "";
+  }
+
+  function crc32(buf) {
+    let table = crc32.table;
+    if (!table) {
+      table = crc32.table = new Uint32Array(256);
+      for (let n = 0; n < 256; n++) {
+        let c = n;
+        for (let k = 0; k < 8; k++) {
+          c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        table[n] = c >>> 0;
+      }
+    }
+    let c = 0xffffffff;
+    for (const b of buf) c = table[(c ^ b) & 255] ^ (c >>> 8);
+    return (c ^ 0xffffffff) >>> 0;
+  }
+
+  function u16(n) {
+    const b = new Uint8Array(2);
+    new DataView(b.buffer).setUint16(0, n, true);
+    return b;
+  }
+
+  function u32(n) {
+    const b = new Uint8Array(4);
+    new DataView(b.buffer).setUint32(0, n >>> 0, true);
+    return b;
+  }
+
+  function concat(parts) {
+    const size = parts.reduce((n, p) => n + p.length, 0);
+    const out = new Uint8Array(size);
+    let o = 0;
+    for (const p of parts) {
+      out.set(p, o);
+      o += p.length;
+    }
+    return out;
+  }
+
+  function enc(s) {
+    return new TextEncoder().encode(s);
+  }
+
+  function dos() {
+    const d = new Date();
+    return {
+      time: (d.getHours() << 11) | (d.getMinutes() << 5) | Math.floor(d.getSeconds() / 2),
+      date: ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()
+    };
+  }
+
+  async function makeZip(items) {
+    const dt = dos();
+    const locals = [];
+    const centrals = [];
+    let offset = 0;
+
+    for (const item of items) {
+      const name = enc(item.name);
+      const data = new Uint8Array(await item.blob.arrayBuffer());
+      const crc = crc32(data);
+      const local = concat([
+        u32(0x04034b50), u16(20), u16(0), u16(0), u16(dt.time), u16(dt.date),
+        u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), name, data
+      ]);
+      locals.push(local);
+      centrals.push(concat([
+        u32(0x02014b50), u16(20), u16(20), u16(0), u16(0), u16(dt.time), u16(dt.date),
+        u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), u16(0),
+        u16(0), u16(0), u32(0), u32(offset), name
+      ]));
+      offset += local.length;
+    }
+
+    const centralStart = offset;
+    const central = concat(centrals);
+    const end = concat([
+      u32(0x06054b50), u16(0), u16(0), u16(items.length), u16(items.length),
+      u32(central.length), u32(centralStart), u16(0)
+    ]);
+    return new Blob([concat([...locals, central, end])], { type: "application/zip" });
+  }
+
+  async function downloadZip() {
+    if (!downloadQueue.length) return;
+    const mode = modes[currentMode];
+    setStatus("Building zip...");
+    const zipBlob = await makeZip(downloadQueue);
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = mode.zipName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    setStatus("Zip ready. Download started.", "ok");
+    showToast("Downloaded one zip with " + downloadQueue.length + " " + mode.itemLabel + (downloadQueue.length === 1 ? "" : "s") + ".");
+  }
+
+  function openViewer(url) {
+    viewerImage.src = url;
+    viewer.classList.add("show");
+  }
+
+  function closeViewer() {
+    viewer.classList.remove("show");
+    viewerImage.removeAttribute("src");
+  }
+
+  modeButton.addEventListener("click", () => {
+    if (modePicker.classList.contains("open")) closeModeMenu();
+    else openModeMenu();
+  });
+
+  modeOptions.forEach((option) => {
+    option.addEventListener("click", () => setMode(option.dataset.mode));
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!modePicker.contains(event.target)) closeModeMenu();
+  });
+
+  modeMenu.addEventListener("keydown", (event) => {
+    const index = modeOptions.indexOf(document.activeElement);
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const step = event.key === "ArrowDown" ? 1 : -1;
+      const next = (index + step + modeOptions.length) % modeOptions.length;
+      modeOptions[next].focus();
+    }
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      document.activeElement.click();
+    }
+    if (event.key === "Escape") {
+      closeModeMenu(true);
+    }
+  });
+
+  modeButton.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openModeMenu();
+      const selected = modeOptions.find((option) => option.dataset.mode === currentMode) || modeOptions[0];
+      selected.focus();
+    }
+  });
+
+  pickFilesBtn.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", (event) => handleFiles(event.target.files));
+
+  pickTemplateBtn.addEventListener("click", () => {
+    if (currentMode === "jpg2snap") templateInput.click();
+  });
+  templateInput.addEventListener("change", async (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    try {
+      await loadTemplate(file);
+      setStatus("Template loaded. JPGs can now become PGTA files.", "ok");
+    } catch (error) {
+      templateHeader = null;
+      templateStatus.textContent = "Template failed: " + (error && error.message ? error.message : String(error));
+      setStatus("Template failed to load.", "bad");
+    } finally {
+      templateInput.value = "";
+    }
+  });
+
+  clearBtn.addEventListener("click", clearAll);
+  downloadAllBtn.addEventListener("click", downloadZip);
+  $("toastClose").addEventListener("click", () => toast.classList.remove("show"));
+  $("viewerClose").addEventListener("click", closeViewer);
+  viewer.addEventListener("click", (event) => {
+    if (event.target === viewer) closeViewer();
+  });
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeViewer();
+      closeModeMenu();
+    }
+  });
+
+  ["dragenter", "dragover"].forEach((eventName) => {
+    dropEl.addEventListener(eventName, (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      dropEl.classList.add("drag");
+    });
+  });
+  ["dragleave", "drop"].forEach((eventName) => {
+    dropEl.addEventListener(eventName, (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      dropEl.classList.remove("drag");
+    });
+  });
+  dropEl.addEventListener("drop", (event) => {
+    const dt = event.dataTransfer;
+    if (dt && dt.files) handleFiles(dt.files);
+  });
+
+  updateModeUI();
+})();
+</script>
+</body>
+</html>
